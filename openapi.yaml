@@ -1,0 +1,859 @@
+openapi: 3.1.0
+jsonSchemaDialect: https://spec.openapis.org/oas/3.1/dialect/base
+info:
+  title: DataWayfinder API
+  description: |
+    DataWayfinder API provides a RPC style interface for managing platforms, platform instances, and journeys.
+
+    ## Authentication
+    All requests (except login) require an `X-TOKEN` header with a valid JWT token obtained from the login endpoint.
+
+    ## Request Structure
+    All requests use the same endpoint with a JSON body that specifies the service and action to perform.
+  version: 1.0.0
+  contact:
+    name: DataWayfinder Support
+    url: https://bladock.com
+
+servers:
+  - url: https://api.datawayfinder.com/v1
+    description: Production server
+  - url: https://api-stg.datawayfinder.com/v1
+    description: Staging server
+
+paths:
+  /service_dispacher:
+    post:
+      summary: Service Dispatcher
+      description: |
+        Main service dispatcher endpoint that handles all API operations.
+        The operation performed is determined by the `service` and `action` fields in the request body.
+      operationId: dispatchService
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceRequest'
+            examples:
+              login:
+                $ref: '#/components/examples/LoginRequestExample'
+              platformsList:
+                $ref: '#/components/examples/PlatformsListRequestExample'
+              platformsGet:
+                $ref: '#/components/examples/PlatformsGetRequestExample'
+              platformInstancesList:
+                $ref: '#/components/examples/PlatformInstancesListRequestExample'
+              platformInstancesGet:
+                $ref: '#/components/examples/PlatformInstancesGetRequestExample'
+              platformInstancesSave:
+                $ref: '#/components/examples/PlatformInstancesSaveRequestExample'
+              journeysList:
+                $ref: '#/components/examples/JourneysListRequestExample'
+              journeysGet:
+                $ref: '#/components/examples/JourneysGetRequestExample'
+              journeysSave:
+                $ref: '#/components/examples/JourneysSaveRequestExample'
+              journeysCreateJourney:
+                $ref: '#/components/examples/JourneysCreateJourneyRequestExample'
+              journeysAddConversation:
+                $ref: '#/components/examples/JourneysAddConversationRequestExample'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                loginSuccess:
+                  summary: Login - Successful login
+                  value:
+                    token: "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJEYXRhX1dheWZpbmRlciIsImlhdCI6MTc2MjM4MDg3Nywic3ViIjoiMTc2MjM4MDg3NzY2MSIsImlzcyI6IjEiLCJleHAiOjE3NjIzODE3Nzd9.ChWXxbNssnvwBIrKjPFiE5m5KC0f_CoYH14MogOjEeY"
+                    user_id: 1
+                    expires_at: "2026-01-25T12:00:00Z"
+                platformsList:
+                  summary: Platforms - List response
+                  value:
+                    data:
+                      - id: 1
+                        name: "NetSuite"
+                        description: "NetSuite ERP Platform"
+                      - id: 2
+                        name: "Shopify"
+                        description: "Shopify E-commerce Platform"
+                      - id: 3
+                        name: "QuickBooks"
+                        description: "QuickBooks Accounting Platform"
+                platformsGet:
+                  summary: Platforms - Get by ID response
+                  value:
+                    data:
+                      id: 1
+                      name: "NetSuite"
+                      description: "NetSuite ERP Platform"
+                platformInstancesList:
+                  summary: Platform Instances - List response
+                  value:
+                    data:
+                      - id: 1
+                        company_id: 1
+                        instance_name: "Netsuite Shop 1"
+                        platform_id: 1
+                      - id: 2
+                        company_id: 1
+                        instance_name: "Shopify Store Main"
+                        platform_id: 2
+                platformInstancesGet:
+                  summary: Platform Instances - Get by ID response
+                  value:
+                    data:
+                      id: 2
+                      company_id: 1
+                      instance_name: "Shopify Store Main"
+                      platform_id: 2
+                platformInstancesSave:
+                  summary: Platform Instances - Save response
+                  value:
+                    id: 1
+                    data:
+                      id: 1
+                      company_id: 1
+                      instance_name: "Netsuite Shop 1"
+                      platform_id: 1
+                journeysList:
+                  summary: Journeys - List response
+                  value:
+                    data:
+                      - id: 1
+                        name: "Order to Cash Journey"
+                        company_id: 1
+                        source_instance_id: 1
+                        destination_instance_id: 2
+                      - id: 12
+                        name: "Journey From Postman"
+                        company_id: 1
+                        current_version_id: 2
+                journeysGet:
+                  summary: Journeys - Get by ID response
+                  value:
+                    data:
+                      id: 12
+                      company_id: "1"
+                      journey_name: "Journey From Postman"
+                      current_version_id: 2
+                      create_date: "2026-01-21 20:58:00"
+                      last_run: ""
+                      creator: "1"
+                      conversation:
+                        - role: "user"
+                          parts:
+                            - type: "text"
+                              value: "Convert from Quickbook customer to netsuite customer"
+                        - role: "assistant"
+                          parts:
+                            - type: "text"
+                              value: "Response: 1769029080458"
+                      transformations:
+                        - type: "Direct"
+                          formula: "Concatenate"
+                          summary: "Combine the individual address columns into a single one."
+                          fields:
+                            - label: "street"
+                              value: "SRS Non-Prod | 1769029533326"
+                            - label: "address"
+                              value: "SRS Non-Prod | Users"
+                journeysSave:
+                  summary: Journeys - Save response
+                  value:
+                    id: 12
+                    data:
+                      id: 12
+                      company_id: "1"
+                      journey_name: "Journey From Postman"
+                      current_version_id: 2
+                journeysCreateJourney:
+                  summary: Journeys - Create journey response
+                  value:
+                    id: 13
+                    data:
+                      id: 13
+                      company_id: "1"
+                      journey_name: "QuickBooks to NetSuite Customer Journey"
+                      current_version_id: 1
+                      create_date: "2026-01-25 10:30:00"
+                      creator: "1"
+                journeysAddConversation:
+                  summary: Journeys - Add conversation response
+                  value:
+                    data:
+                      id: 12
+                      conversation_entry:
+                        role: "user"
+                        parts:
+                          - type: "text"
+                            value: "Ok, now also include zipcode"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    TokenAuth:
+      type: apiKey
+      in: header
+      name: X-TOKEN
+      description: JWT token obtained from login endpoint
+
+  schemas:
+    # Base Request/Response Schemas
+    ServiceRequest:
+      title: Service Request
+      oneOf:
+        - $ref: '#/components/schemas/LoginRequest'
+        - $ref: '#/components/schemas/PlatformsRequest'
+        - $ref: '#/components/schemas/PlatformInstancesRequest'
+        - $ref: '#/components/schemas/JourneysRequest'
+      discriminator:
+        propertyName: service
+        mapping:
+          login: '#/components/schemas/LoginRequest'
+          platforms: '#/components/schemas/PlatformsRequest'
+          platforms_instances: '#/components/schemas/PlatformInstancesRequest'
+          journeys: '#/components/schemas/JourneysRequest'
+      description: |
+        Main service request schema that routes to specific service handlers based on the service field.
+        Each service may have different actions (list, get, save, etc.).
+
+    BaseRequest:
+      type: object
+      required:
+        - service
+        - action
+      properties:
+        service:
+          type: string
+          description: The service to call
+        action:
+          type: string
+          description: The action to perform
+
+    ServiceResponse:
+      title: Service Response
+      oneOf:
+        - $ref: '#/components/schemas/LoginResponse'
+        - $ref: '#/components/schemas/PlatformsListResponse'
+        - $ref: '#/components/schemas/PlatformResponse'
+        - $ref: '#/components/schemas/PlatformInstancesListResponse'
+        - $ref: '#/components/schemas/PlatformInstanceResponse'
+        - $ref: '#/components/schemas/JourneysListResponse'
+        - $ref: '#/components/schemas/JourneyResponse'
+        - $ref: '#/components/schemas/SaveResponse'
+      description: |
+        Service response that can be one of several response types depending on the operation performed.
+
+    BaseResponse:
+      type: object
+      properties: {}
+
+    # Authentication Schemas
+    LoginRequest:
+      title: Login Request
+      type: object
+      required:
+        - service
+        - action
+        - user
+        - password
+      properties:
+        service:
+          type: string
+          const: "login"
+          description: Must be "login"
+        action:
+          type: string
+          const: "login"
+          description: Must be "login"
+        user:
+          type: string
+          format: email
+          description: User email address
+          example: "oscar@bladock.com"
+        password:
+          type: string
+          format: password
+          description: User password
+          example: "peterete"
+      description: Login request to authenticate user
+
+    LoginResponse:
+      title: Login Response
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            token:
+              type: string
+              description: JWT token for subsequent requests
+              example: "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJEYXRhX1dheWZpbmRlciIsImlhdCI6MTc2MjM4MDg3Nywic3ViIjoiMTc2MjM4MDg3NzY2MSIsImlzcyI6IjEiLCJleHAiOjE3NjIzODE3Nzd9.ChWXxbNssnvwBIrKjPFiE5m5KC0f_CoYH14MogOjEeY"
+            user_id:
+              type: integer
+              description: ID of the authenticated user
+            expires_at:
+              type: string
+              format: date-time
+              description: Token expiration timestamp
+
+    # Platform Schemas
+    Platform:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Platform unique identifier
+          example: 1
+        name:
+          type: string
+          description: Platform name
+          example: "NetSuite"
+        description:
+          type: string
+          description: Platform description
+          example: "NetSuite ERP Platform"
+
+    PlatformsRequest:
+      title: Platforms Request
+      oneOf:
+        - $ref: '#/components/schemas/PlatformsListRequest'
+        - $ref: '#/components/schemas/PlatformsGetRequest'
+      discriminator:
+        propertyName: action
+        mapping:
+          list: '#/components/schemas/PlatformsListRequest'
+          get: '#/components/schemas/PlatformsGetRequest'
+
+    PlatformsListRequest:
+      title: Platforms List Request
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+        - type: object
+          required:
+            - service
+            - action
+          properties:
+            service:
+              type: string
+              const: "platforms"
+            action:
+              type: string
+              const: "list"
+      description: Request to list all platforms
+
+    PlatformsGetRequest:
+      title: Platforms Get Request
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+        - type: object
+          required:
+            - service
+            - action
+            - id
+          properties:
+            service:
+              type: string
+              const: "platforms"
+            action:
+              type: string
+              const: "get"
+            id:
+              type: integer
+              description: Platform ID to retrieve
+              example: 1
+      description: Request to get a specific platform by ID
+
+    PlatformsListResponse:
+      title: Platforms List Response
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Platform'
+
+    PlatformResponse:
+      title: Platform Response
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Platform'
+
+    # Platform Instance Schemas
+    PlatformInstance:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Platform instance unique identifier
+          example: 1
+        company_id:
+          type: integer
+          description: Company ID that owns this instance
+          example: 1
+        instance_name:
+          type: string
+          description: Name of the platform instance
+          example: "Netsuite Shop 1"
+        platform_id:
+          type: integer
+          description: ID of the platform this instance belongs to
+          example: 1
+
+    PlatformInstancesRequest:
+      title: Platform Instances Request
+      oneOf:
+        - $ref: '#/components/schemas/PlatformInstancesListRequest'
+        - $ref: '#/components/schemas/PlatformInstancesGetRequest'
+        - $ref: '#/components/schemas/PlatformInstancesSaveRequest'
+      discriminator:
+        propertyName: action
+        mapping:
+          list: '#/components/schemas/PlatformInstancesListRequest'
+          get: '#/components/schemas/PlatformInstancesGetRequest'
+          save: '#/components/schemas/PlatformInstancesSaveRequest'
+
+    PlatformInstancesListRequest:
+      title: Platform Instances List Request
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+        - type: object
+          required:
+            - service
+            - action
+          properties:
+            service:
+              type: string
+              const: "platforms_instances"
+            action:
+              type: string
+              const: "list"
+      description: Request to list all platform instances
+
+    PlatformInstancesGetRequest:
+      title: Platform Instances Get Request
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+        - type: object
+          required:
+            - service
+            - action
+            - id
+          properties:
+            service:
+              type: string
+              const: "platforms_instances"
+            action:
+              type: string
+              const: "get"
+            id:
+              type: integer
+              description: Platform instance ID to retrieve
+              example: 2
+      description: Request to get a specific platform instance by ID
+
+    PlatformInstancesSaveRequest:
+      title: Platform Instances Save Request
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+        - type: object
+          required:
+            - service
+            - action
+            - company_id
+            - instance_name
+            - platform_id
+          properties:
+            service:
+              type: string
+              const: "platforms_instances"
+            action:
+              type: string
+              const: "save"
+            id:
+              type: integer
+              description: Platform instance ID (for updates, omit for create)
+              example: 1
+            company_id:
+              type: integer
+              description: Company ID that owns this instance
+              example: 1
+            instance_name:
+              type: string
+              description: Name of the platform instance
+              example: "Netsuite Shop 1"
+            platform_id:
+              type: integer
+              description: ID of the platform this instance belongs to
+              example: 1
+      description: Request to create or update a platform instance
+
+    PlatformInstancesListResponse:
+      title: Platform Instances List Response
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/PlatformInstance'
+
+    PlatformInstanceResponse:
+      title: Platform Instance Response
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/PlatformInstance'
+
+    # Journey Schemas
+    Journey:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Journey unique identifier
+          example: 1
+        name:
+          type: string
+          description: Journey name
+          example: "Order to Cash Journey"
+        company_id:
+          type: integer
+          description: Company ID that owns this journey
+        source_instance_id:
+          type: integer
+          description: Source platform instance ID
+        destination_instance_id:
+          type: integer
+          description: Destination platform instance ID
+
+    JourneysRequest:
+      title: Journeys Request
+      oneOf:
+        - $ref: '#/components/schemas/JourneysListRequest'
+        - $ref: '#/components/schemas/JourneysGetRequest'
+        - $ref: '#/components/schemas/JourneysSaveRequest'
+        - $ref: '#/components/schemas/JourneysCreateJourneyRequest'
+        - $ref: '#/components/schemas/JourneysAddConversationRequest'
+      discriminator:
+        propertyName: action
+        mapping:
+          list: '#/components/schemas/JourneysListRequest'
+          get: '#/components/schemas/JourneysGetRequest'
+          save: '#/components/schemas/JourneysSaveRequest'
+          createJourney: '#/components/schemas/JourneysCreateJourneyRequest'
+          addConversation: '#/components/schemas/JourneysAddConversationRequest'
+
+    JourneysListRequest:
+      title: Journeys List Request
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+        - type: object
+          required:
+            - service
+            - action
+          properties:
+            service:
+              type: string
+              const: "journeys"
+            action:
+              type: string
+              const: "list"
+      description: Request to list all journeys
+
+    JourneysGetRequest:
+      title: Journeys Get Request
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+        - type: object
+          required:
+            - service
+            - action
+            - id
+          properties:
+            service:
+              type: string
+              const: "journeys"
+            action:
+              type: string
+              const: "get"
+            id:
+              type: integer
+              description: Journey ID to retrieve
+              example: 1
+      description: Request to get a specific journey by ID
+
+    JourneysSaveRequest:
+      title: Journeys Save Request
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+        - type: object
+          required:
+            - service
+            - action
+            - name
+            - company_id
+            - source_instance_id
+            - destination_instance_id
+          properties:
+            service:
+              type: string
+              const: "journeys"
+            action:
+              type: string
+              const: "save"
+            id:
+              type: integer
+              description: Journey ID (for updates, omit for create)
+              example: 1
+            name:
+              type: string
+              description: Journey name
+              example: "Order to Cash Journey"
+            company_id:
+              type: integer
+              description: Company ID that owns this journey
+              example: 1
+            source_instance_id:
+              type: integer
+              description: Source platform instance ID
+              example: 1
+            destination_instance_id:
+              type: integer
+              description: Destination platform instance ID
+              example: 2
+      description: Request to create or update a journey
+
+    JourneysCreateJourneyRequest:
+      title: Journeys Create Journey Request
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+        - type: object
+          required:
+            - service
+            - action
+            - prompt
+          properties:
+            service:
+              type: string
+              const: "journeys"
+            action:
+              type: string
+              const: "createJourney"
+            prompt:
+              type: string
+              description: Natural language prompt describing the journey to create
+              example: "Convert from Quickbook customer to netsuite customer"
+      description: Request to create a new journey from a natural language prompt
+
+    JourneysAddConversationRequest:
+      title: Journeys Add Conversation Request
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+        - type: object
+          required:
+            - service
+            - action
+            - id
+            - prompt
+          properties:
+            service:
+              type: string
+              const: "journeys"
+            action:
+              type: string
+              const: "addConversation"
+            id:
+              type: integer
+              description: Journey ID to add conversation to
+              example: 12
+            prompt:
+              type: string
+              description: User prompt to add to the journey conversation
+              example: "Ok, now also include zipcode"
+      description: Request to add a conversation entry to an existing journey
+
+    JourneysListResponse:
+      title: Journeys List Response
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Journey'
+
+    JourneyResponse:
+      title: Journey Response
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Journey'
+
+    # Common Schemas
+    SaveResponse:
+      title: Save Response
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            id:
+              type: integer
+              description: ID of the created or updated resource
+            data:
+              type: object
+              description: The created or updated resource data
+
+    ErrorResponse:
+      title: Error Response
+      allOf:
+        - type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            returned_message:
+              type: object
+              description: Additional error details
+              additionalProperties: true
+
+  examples:
+    LoginRequestExample:
+      summary: Login request
+      value:
+        service: "login"
+        action: "login"
+        user: "oscar@bladock.com"
+        password: "peterete"
+
+    PlatformsListRequestExample:
+      summary: Platforms - List request
+      value:
+        service: "platforms"
+        action: "list"
+
+    PlatformsGetRequestExample:
+      summary: Platforms - Get by ID request
+      value:
+        service: "platforms"
+        action: "get"
+        id: 1
+
+    PlatformInstancesListRequestExample:
+      summary: Platform Instances - List request
+      value:
+        service: "platforms_instances"
+        action: "list"
+
+    PlatformInstancesGetRequestExample:
+      summary: Platform Instances - Get by ID request
+      value:
+        service: "platforms_instances"
+        action: "get"
+        id: 2
+
+    PlatformInstancesSaveRequestExample:
+      summary: Platform Instances - Save request
+      value:
+        service: "platforms_instances"
+        action: "save"
+        id: 1
+        company_id: 1
+        instance_name: "Netsuite Shop 1"
+        platform_id: 1
+
+    JourneysListRequestExample:
+      summary: Journeys - List request
+      value:
+        service: "journeys"
+        action: "list"
+
+    JourneysGetRequestExample:
+      summary: Journeys - Get by ID request
+      value:
+        service: "journeys"
+        action: "get"
+        id: 1
+
+    JourneysSaveRequestExample:
+      summary: Journeys - Save request
+      value:
+        service: "journeys"
+        action: "save"
+        id: 1
+        name: "Order to Cash Journey"
+        company_id: 1
+        source_instance_id: 1
+        destination_instance_id: 2
+
+    JourneysCreateJourneyRequestExample:
+      summary: Journeys - Create journey request
+      value:
+        service: "journeys"
+        action: "createJourney"
+        prompt: "Convert from Quickbook customer to netsuite customer"
+
+    JourneysAddConversationRequestExample:
+      summary: Journeys - Add conversation request
+      value:
+        service: "journeys"
+        action: "addConversation"
+        id: 12
+        prompt: "Ok, now also include zipcode"
+
+  responses:
+    UnauthorizedError:
+      description: Authentication token is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: "UNAUTHORIZED"
+            returned_message: "Invalid or expired token"
+
+    BadRequestError:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: "BAD_REQUEST"
+            returned_message: "Invalid request parameters"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: "INTERNAL_ERROR"
+            returned_message: "An internal error occurred"
+
+security:
+  - TokenAuth: []
