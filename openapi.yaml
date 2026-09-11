@@ -71,7 +71,7 @@ paths:
                 loginSuccess:
                   summary: Login - Successful login
                   value:
-                    token: "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJEYXRhX1dheWZpbmRlciIsImlhdCI6MTc2MjM4MDg3Nywic3ViIjoiMTc2MjM4MDg3NzY2MSIsImlzcyI6IjEiLCJleHAiOjE3NjIzODE3Nzd9.ChWXxbNssnvwBIrKjPFiE5m5KC0f_CoYH14MogOjEeY"
+                    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.<example-payload>.<example-signature>"
                     user_id: 1
                     expires_at: "2026-01-25T12:00:00Z"
                 platformsList:
@@ -283,12 +283,12 @@ components:
           type: string
           format: email
           description: User email address
-          example: "oscar@bladock.com"
+          example: "example.user@example.com"
         password:
           type: string
           format: password
           description: User password
-          example: "peterete"
+          example: "example-password-not-a-real-credential"
       description: Login request to authenticate user
 
     LoginResponse:
@@ -300,7 +300,7 @@ components:
             token:
               type: string
               description: JWT token for subsequent requests
-              example: "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJEYXRhX1dheWZpbmRlciIsImlhdCI6MTc2MjM4MDg3Nywic3ViIjoiMTc2MjM4MDg3NzY2MSIsImlzcyI6IjEiLCJleHAiOjE3NjIzODE3Nzd9.ChWXxbNssnvwBIrKjPFiE5m5KC0f_CoYH14MogOjEeY"
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.<example-payload>.<example-signature>"
             user_id:
               type: integer
               description: ID of the authenticated user
@@ -746,8 +746,8 @@ components:
       value:
         service: "login"
         action: "login"
-        user: "oscar@bladock.com"
-        password: "peterete"
+        user: "example.user@example.com"
+        password: "example-password-not-a-real-credential"
 
     PlatformsListRequestExample:
       summary: Platforms - List request
